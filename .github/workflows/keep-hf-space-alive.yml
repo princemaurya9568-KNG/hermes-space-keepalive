@@ -1,4 +1,3 @@
-# .github/workflows/keep-hf-space-alive.yml
 name: Keep HF Space Alive
 
 on:
@@ -11,20 +10,16 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 5
     env:
-      ADMIN_USERNAME: ${{ secrets.ADMIN_USERNAME }}
-      ADMIN_PASSWORD: ${{ secrets.ADMIN_PASSWORD }}
       SPACE_URL: "https://princemauryabsdhsff-hermes-desktop.hf.space"
     steps:
       - name: Ping Admin API (wakes gateway)
         run: |
           curl -fsS --max-time 30 \
-            -u "${ADMIN_USERNAME}:${ADMIN_PASSWORD}" \
             "${SPACE_URL}/setup/api/status" > /dev/null \
             && echo "✅ Admin API OK" || (echo "❌ Admin API failed" && exit 1)
 
       - name: Ping Public Endpoint
         run: |
           curl -fsS --max-time 30 \
-            -u "${ADMIN_USERNAME}:${ADMIN_PASSWORD}" \
             "${SPACE_URL}/" > /dev/null \
             && echo "✅ Public OK" || (echo "❌ Public failed" && exit 1)
