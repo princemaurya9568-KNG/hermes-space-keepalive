@@ -1,0 +1,27 @@
+name: Keep HF Space Alive
+
+on:
+  schedule:
+    - cron: '*/30 * * * *'
+  workflow_dispatch:
+
+jobs:
+  keep-alive:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Ping HF Space (public)
+        run: |
+          curl -fsS --max-time 30 "https://princemauryabsdhsff-hermes-desktop.hf.space/" > /dev/null \
+            && echo "✅ Space responded" || (echo "❌ Failed" && exit 1)
+
+      - name: Ping HF Space (admin API)
+        if: env.ADMIN_USERNAME != '' && env.ADMIN_PASSWORD != ''
+        env:
+          ADMIN_USERNAME: ${{ secrets.ADMIN_USERNAME }}
+          ADMIN_PASSWORD: ${{ secrets.ADMIN_PASSWORD }}
+        run: |
+          curl -fsS --max-time 30 \
+            -u "${ADMIN_USERNAME}:${ADMIN_PASSWORD}" \
+            "https://princemauryabsdhsff-hermes-desktop.hf.space/setup/api/status" > /dev/null \
+            && echo "✅ Admin API responded" || (echo "❌ Admin API failed" && exit 1)
